@@ -8,7 +8,8 @@ app.use(express.json())
 
 app.post("/tv-webhook", async (req, res) => {
   const { ticker, tf, event } = req.body
-  const message = `${ticker} hit the ${tf} ${event}`
+  const message = `${ticker} hit the ${tf} ${event} zone`
+
 
   try {
     await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
