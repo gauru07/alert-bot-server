@@ -9,12 +9,15 @@ app.use(express.json())
 app.post("/tv-webhook", async (req, res) => {
   const { script, ticker, tf, zone, price } = req.body
 
-  // validate
+  // validate the new fields
   if (!ticker || !tf || !zone || !price) {
-    return res.status(400).send("Missing fields")
+    console.error("❌ Missing one or more required fields:", req.body)
+    return res
+      .status(400)
+      .send("Missing one or more required fields: ticker, tf, zone, price")
   }
 
-  // build a human‐friendly text
+  // build the human-friendly text
   const text = `${script}: ${ticker} hit the ${tf} ${zone} zone at ${price}`
 
   try {
@@ -28,10 +31,12 @@ app.post("/tv-webhook", async (req, res) => {
     console.log("✅ Sent to Telegram:", text)
     res.sendStatus(200)
   } catch (err) {
-    console.error("Telegram Error:", err.response?.data || err.message)
+    console.error("❌ Telegram Error:", err.response?.data || err.message)
     res.sendStatus(500)
   }
 })
 
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => console.log(`🚀 Webhook server running on port ${PORT}`))
+app.listen(PORT, () =>
+  console.log(`🚀 Webhook server running on port ${PORT}`)
+)
