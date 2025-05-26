@@ -1,24 +1,25 @@
 // server.js
-const express = require("express")
-const axios   = require("axios")
-require("dotenv").config()
+const express = require("express");
+const axios = require("axios");
+require("dotenv").config();
 
-const app = express()
-app.use(express.json())
+
+const app = express();
+app.use(express.json());
 
 app.post("/tv-webhook", async (req, res) => {
-  const { script, ticker, tf, zone, price } = req.body
+  const { script, ticker, tf, zone, price } = req.body;
 
-  // validate the new fields
+  // validate required fields
   if (!ticker || !tf || !zone || !price) {
-    console.error("❌ Missing one or more required fields:", req.body)
+    console.error("❌ Missing one or more required fields:", req.body);
     return res
       .status(400)
-      .send("Missing one or more required fields: ticker, tf, zone, price")
+      .send("Missing one or more required fields: ticker, tf, zone, price");
   }
 
-  // build the human-friendly text
-  const text = `${script}: ${ticker} hit the ${tf} ${zone} zone at ${price}`
+  // build the human-friendly message
+  const text = `${script}: ${ticker} hit the ${tf} ${zone} zone at ${price}`;
 
   try {
     await axios.post(
@@ -27,16 +28,16 @@ app.post("/tv-webhook", async (req, res) => {
         chat_id: process.env.CHAT_ID,
         text
       }
-    )
-    console.log("✅ Sent to Telegram:", text)
-    res.sendStatus(200)
+    );
+    console.log("✅ Sent to Telegram:", text);
+    res.sendStatus(200);
   } catch (err) {
-    console.error("❌ Telegram Error:", err.response?.data || err.message)
-    res.sendStatus(500)
+    console.error("❌ Telegram Error:", err.response?.data || err.message);
+    res.sendStatus(500);
   }
-})
+});
 
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () =>
-  console.log(`🚀 Webhook server running on port ${PORT}`)
-)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Webhook server running on port ${PORT}`);
+});
